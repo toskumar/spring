@@ -10,9 +10,9 @@
 		<relativePath />  <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.demo.spring</groupId>
-	<artifactId>demo-spring-batch</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>demo-spring-batch</name>
+	<artifactId>spring-batch-java-02</artifactId>
+	<version>1.0</version>
+	<name>spring-batch-java-02</name>
 	<description>Demo project for Spring Batch</description>
 
 	<properties>
