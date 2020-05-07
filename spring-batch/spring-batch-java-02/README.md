@@ -1,6 +1,6 @@
 # Spring Batch 
 
-**This demo imports a flat file into a database (spring-batch-java-02)**
+**This example imports a flat file into a database (spring-batch-java-02)**
 
 * Java annotation based spring boot application
 * Spring batch application which imports a flat file into a database table
