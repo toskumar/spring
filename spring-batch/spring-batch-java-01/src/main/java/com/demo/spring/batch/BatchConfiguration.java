@@ -1,7 +1,5 @@
 package com.demo.spring.batch;
 
-import java.net.MalformedURLException;
-
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -17,14 +15,9 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
 @EnableBatchProcessing
@@ -35,40 +28,6 @@ public class BatchConfiguration {
 
 	@Autowired
 	public StepBuilderFactory stepBuilderFactory;
-	
-	@Value("org/springframework/batch/core/schema-drop-sqlite.sql")
-	private Resource dropRepositoryTables;
-
-	@Value("org/springframework/batch/core/schema-sqlite.sql")
-	private Resource dataRepositorySchema;
-	
-	@Value("data/schema-create-sqlite.sql")
-	private Resource userRepositorySchema;
-	
-	@Bean("dataSource")
-	public DataSource dataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.sqlite.JDBC");
-		dataSource.setUrl("jdbc:sqlite:db/spring_batch_sqlite.db");
-
-		return dataSource;
-	}
-	
-	@Bean
-	public DataSourceInitializer dataSourceInitializer(DataSource dataSource) throws MalformedURLException {
-		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-		databasePopulator.addScript(dropRepositoryTables);
-		databasePopulator.addScript(dataRepositorySchema);
-		databasePopulator.addScript(userRepositorySchema);
-		databasePopulator.setIgnoreFailedDrops(true);
-
-		DataSourceInitializer initializer = new DataSourceInitializer();
-		initializer.setDataSource(dataSource);
-		initializer.setDatabasePopulator(databasePopulator);
-
-		return initializer;
-	}
 
 	@Bean
 	public FlatFileItemReader<Person> reader() {
@@ -76,7 +35,7 @@ public class BatchConfiguration {
 				.resource(new ClassPathResource("data/person-data.csv")).delimited()
 				.names(new String[] { "firstName", "lastName", "dob" })
 				.fieldSetMapper(new BeanWrapperFieldSetMapper<Person>() {
-					{	
+					{
 						setTargetType(Person.class);
 					}
 				}).build();
@@ -97,13 +56,15 @@ public class BatchConfiguration {
 
 	@Bean
 	public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
-		return jobBuilderFactory.get("importUserJob").incrementer(new RunIdIncrementer()).listener(listener).flow(step1)
-				.end().build();
+		// Build a job that executes the flow provided, normally composed of other steps
+		return jobBuilderFactory.get("Job").incrementer(new RunIdIncrementer()).listener(listener).flow(step1).end()
+				.build();
 	}
 
 	@Bean
 	public Step step1(JdbcBatchItemWriter<Person> writer) {
-		return stepBuilderFactory.get("step1").<Person, Person>chunk(2).reader(reader()).processor(processor())
+		// Build a step with the reader, writer, processor as provided.
+		return stepBuilderFactory.get("Step1").<Person, Person>chunk(2).reader(reader()).processor(processor())
 				.writer(writer).build();
 	}
 }
