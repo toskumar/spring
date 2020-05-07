@@ -44,7 +44,7 @@ public class BasicConfiguration {
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.sqlite.JDBC");
-		dataSource.setUrl("jdbc:sqlite:db/spring_batch02a_sqlite.db");
+		dataSource.setUrl("jdbc:sqlite:spring_batch02a_sqlite.db");
 
 		return dataSource;
 	}
@@ -53,7 +53,7 @@ public class BasicConfiguration {
 	public DataSource dataSource1() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.sqlite.JDBC");
-		dataSource.setUrl("jdbc:sqlite:db/spring_batch02b_sqlite.db");
+		dataSource.setUrl("jdbc:sqlite:spring_batch02b_sqlite.db");
 
 		return dataSource;
 	}

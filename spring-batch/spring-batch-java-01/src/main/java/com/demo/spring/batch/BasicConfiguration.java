@@ -28,7 +28,7 @@ public class BasicConfiguration {
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.sqlite.JDBC");
-		dataSource.setUrl("jdbc:sqlite:db/spring_batch_sqlite.db");
+		dataSource.setUrl("jdbc:sqlite:batch_sqlite.db");
 
 		return dataSource;
 	}
