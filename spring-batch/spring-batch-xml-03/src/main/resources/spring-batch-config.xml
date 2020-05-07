@@ -1,0 +1,52 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+    http://www.springframework.org/schema/batch/spring-batch.xsd
+    http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+">
+
+	<import resource="spring-config.xml" />
+
+	<bean id="itemReader"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="sql" value="select * from person" />
+		<property name="rowMapper">
+			<bean
+				class="org.springframework.jdbc.core.BeanPropertyRowMapper">
+				<property name="mappedClass" value="com.demo.spring.batch.Person" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="itemProcessor"
+		class="com.demo.spring.batch.PersonItemProcessor" />
+
+	<bean id="itemWriter"
+		class="org.springframework.batch.item.xml.StaxEventItemWriter">
+		<property name="resource" value="file:output/persons.xml" />
+		<property name="marshaller" ref="recordMarshaller" />
+		<property name="rootTagName" value="persons" />
+	</bean>
+
+	<bean id="recordMarshaller"
+		class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="classesToBeBound">
+			<list>
+				<value>com.demo.spring.batch.Person</value>
+			</list>
+		</property>
+	</bean>
+
+	<batch:job id="batchJob">
+		<batch:step id="step1">
+			<batch:tasklet>
+				<batch:chunk reader="itemReader" writer="itemWriter"
+					processor="itemProcessor" commit-interval="10">
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+</beans>
